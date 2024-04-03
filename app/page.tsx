@@ -2,13 +2,9 @@
 import React, { useState } from "react";
 
 function FilterForm(){
-  const [userinfo, setUserInfo] = useState({
-    filters: [],
-  });
+  const [userinfo, setUserInfo] = useState<string[]>([]);
 
-  const [finalData, setFinalData] = useState({
-    data: []
-  })
+  const [finalData, setFinalData] = useState<string[]>([]);
   let filterData: string[] = [];
   
   const features = [
@@ -92,34 +88,28 @@ function filterFeature(nSet: string[]) {
 }
 
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { value, checked } = e.target;
-    const { filters } = userinfo;
     
 
     if (checked) {
-      setUserInfo({
-        filters: [...filters, value],
-      });
+      setUserInfo([...userinfo, value]);
     } else {
-      setUserInfo({
-        filters: filters.filter(
+      setUserInfo(userinfo.filter(
           (e) => e !== value
         )
-      });
+      );
     }
 
     
   }
-const handleSubmit = e => {
-  filterFeature(userinfo.filters);
+const handleSubmit = (e: any) => {
+  filterFeature(userinfo);
   for (let i=0; i<filterData.length-1; i++) {
     filterData[i] = filterData[i] + ", "
   }
 
-    setFinalData({
-      data: [...filterData]
-    })
+    setFinalData([...filterData])
     e.preventDefault()
 }
 
@@ -139,8 +129,8 @@ const handleSubmit = e => {
 
       <div className="Output mt-10">
         {
-          (finalData.data).length > 0 
-          ? <p className="mx-auto text-center">[{finalData.data}]</p>
+          finalData.length > 0 
+          ? <p className="mx-auto text-center">[{finalData}]</p>
           : ""
         }
       </div>
