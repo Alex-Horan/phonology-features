@@ -22,16 +22,16 @@ function FilterForm(){
 ];
 
 
-function filterFeature(nSet: string[]) {
-  if (nSet.length === 0) {
+  function filterFeature(nSet: string[]) {
+    if (nSet.length === 0) {
       for (let items in features) {
-          for (let member in features[items].members) {
-              if (filterData.includes(features[items].members[member])) {
-                  continue
-              } else {
-                  filterData.push(features[items].members[member]);
-              }
+        for (let member in features[items].members) {
+          if (filterData.includes(features[items].members[member])) {
+            continue
+          } else {
+            filterData.push(features[items].members[member]);
           }
+        }
       }
   } else if (nSet.length === 1) {
       for (let items in features) {
@@ -63,7 +63,7 @@ function filterFeature(nSet: string[]) {
                           continue
                       } else {
                           filterData.push(features[items].members[member]);
-                          const check = features.filter(feature => {
+                          features.filter(feature => {
                               for (let k=nSet.length; k>-1; k--) {
                                   if (feature.feature === nSet[k]) {
                                       for (let char of filterData) {
@@ -76,42 +76,36 @@ function filterFeature(nSet: string[]) {
                                       }
                                   }
                               }
-                          })
+                          });
                       }
                   }
               } else {
                   continue
-              }
           }
+        }
       }
+    }
   }
-}
-
 
   const handleChange = (e: any) => {
     const { value, checked } = e.target;
     
-
     if (checked) {
       setUserInfo([...userinfo, value]);
     } else {
-      setUserInfo(userinfo.filter(
-          (e) => e !== value
-        )
-      );
+      setUserInfo(userinfo.filter((e) => e !== value));
+    }
+  }
+
+  const handleSubmit = (e: any) => {
+    filterFeature(userinfo);
+    for (let i=0; i<filterData.length-1; i++) {
+      filterData[i] = filterData[i] + ", "
     }
 
-    
-  }
-const handleSubmit = (e: any) => {
-  filterFeature(userinfo);
-  for (let i=0; i<filterData.length-1; i++) {
-    filterData[i] = filterData[i] + ", "
-  }
-
-    setFinalData([...filterData])
+    setFinalData([...filterData]);
     e.preventDefault()
-}
+  }
 
   const listItems = features.map(feat => {
     return <label className="selection" key={feat.members[0]}>{feat.feature}<input type="checkbox" className="selectionF" value={feat.feature} key={feat.feature} onChange={handleChange}></input></label>
