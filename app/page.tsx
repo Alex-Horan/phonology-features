@@ -28,7 +28,7 @@ function FilterForm(){
   {feature: "-ant", members: ['k','g','ʔ','tʃ','dʒ','ʃ','ʒ','x','h','ŋ','w','j']},
   {feature: "-cont", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','m','n','ŋ']},
   {feature: "-nas", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','l','w','j']},
-  {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','x','h','m','n','ŋ','tr','l','w','j']},
+  {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','x','h','m','n','ŋ','ɹ','l','w','j']},
   {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j']},
   {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j','l']},
   {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','x','h']}
