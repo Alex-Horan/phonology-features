@@ -8,6 +8,7 @@ function FilterForm(){
   let filterData: string[] = [];
   
   const features = [
+  //positive features
   {feature: "+syll", members: ['m','n','ŋ','ɹ','l']},
   {feature: "+cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','m','n','ŋ','ɹ','l']},
   {feature: "+son", members: ['m','n','ŋ','ɹ','l','w','j']},
@@ -19,6 +20,19 @@ function FilterForm(){
   {feature: "+lat", members: ['l']},
   {feature: "+d.r", members: ['tʃ','dʒ']},
   {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j']},
+  //negative features
+  {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','w','j']},
+  {feature: "-cons", members: ['w','j']},
+  {feature: "-son", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h']},
+  {feature: "-cor", members: ['p','b','k','g','ʔ','f','v','x','h','m','ŋ','w']},
+  {feature: "-ant", members: ['k','g','ʔ','tʃ','dʒ','ʃ','ʒ','x','h','ŋ','w','j']},
+  {feature: "-cont", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','m','n','ŋ']},
+  {feature: "-nas", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','l','w','j']},
+  {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','x','h','m','n','ŋ','tr','l','w','j']},
+  {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j']},
+  {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j','l']},
+  {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','x','h']}
+
 ];
 
 
