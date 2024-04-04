@@ -10,29 +10,28 @@ function FilterForm(){
   const features = [
   //positive features
   {feature: "+syll", members: ['m','n','ŋ','ɹ','l']},
-  {feature: "+cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','m','n','ŋ','ɹ','l']},
+  {feature: "+cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','m','n','ŋ','ɹ','l']},
   {feature: "+son", members: ['m','n','ŋ','ɹ','l','w','j']},
   {feature: "+cor", members: ['t','d','ɾ','tʃ','dʒ','θ','ð','s','z','ʃ','ʒ','n','ɹ','l','j']},
   {feature: "+ant", members: ['p','b','t','d','ɾ','f','v','θ','ð','s','z','m','n','ɹ','l']},
-  {feature: "+cont", members: ['f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','l','w','j']},
+  {feature: "+cont", members: ['f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','l','w','j']},
   {feature: "+nas", members: ['m','n','ŋ']},
   {feature: "+strid", members: ['tʃ','dʒ','f','v','s','z','ʃ','ʒ']},
   {feature: "+lat", members: ['l']},
   {feature: "+d.r", members: ['tʃ','dʒ']},
   {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j']},
   //negative features
-  {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','w','j']},
+  {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','w','j']},
   {feature: "-cons", members: ['w','j']},
-  {feature: "-son", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h']},
-  {feature: "-cor", members: ['p','b','k','g','ʔ','f','v','x','h','m','ŋ','w']},
-  {feature: "-ant", members: ['k','g','ʔ','tʃ','dʒ','ʃ','ʒ','x','h','ŋ','w','j']},
+  {feature: "-son", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h']},
+  {feature: "-cor", members: ['p','b','k','g','ʔ','f','v','h','m','ŋ','w']},
+  {feature: "-ant", members: ['k','g','ʔ','tʃ','dʒ','ʃ','ʒ','h','ŋ','w','j']},
   {feature: "-cont", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','m','n','ŋ']},
-  {feature: "-nas", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','l','w','j']},
-  {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','x','h','m','n','ŋ','ɹ','l','w','j']},
-  {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j']},
-  {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','x','h','ɹ','m','n','ŋ','w','j','l']},
-  {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','x','h']}
-
+  {feature: "-nas", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','l','w','j']},
+  {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','h','m','n','ŋ','ɹ','l','w','j']},
+  {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j']},
+  {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j','l']},
+  {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','h']},
 ];
 
 
@@ -118,8 +117,10 @@ function FilterForm(){
     }
 
     setFinalData([...filterData]);
-    e.preventDefault()
+    e.preventDefault();
   }
+
+
 
   const listItems = features.map(feat => {
     return <label className="selection" key={feat.members[0]}>{feat.feature}<input type="checkbox" className="selectionF" value={feat.feature} key={feat.feature} onChange={handleChange}></input></label>
