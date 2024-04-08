@@ -22,3 +22,11 @@
   justify-self: center;
 }
 
+:root {
+  scrollbar-color: #949cbb #303446;
+}
+
+.border-b {
+  border-bottom: 2px solid #181926;
+  margin-top: 2px;
+}
