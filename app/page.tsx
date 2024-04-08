@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import './globals.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { Divider } from "@mui/material";
+
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
-  const [update, setUpdate] = useState<boolean>(false);
+
   let filterData: string[] = [];
   const features = [
   //positive features
@@ -114,42 +116,54 @@ function FilterForm(){
 
   const handleFilter = (e: any) => {
     let { value } = e.target;
-    setFilterSet([...filterSet, value])
-    
+    e.target.className = e.target.className + " fadeOutE";
+    e.target.addEventListener('animationend', () => {
+      setFilterSet([...filterSet, value]);
+    });
   }
 
   const handleRemoveFilter = (e: any) => {
     const { value } = e.target;
-    setFilterSet(filterSet.filter((e) => e !== value))
+    e.target.className = e.target.className.replace("fadeInE","") + " fadeOutE";
+    e.target.addEventListener('animationend', () => {
+      e.target.className = e.target.className + " opacity-0"
+      setFilterSet(filterSet.filter((e) => e !== value));
+    });
   }
 
   const handleSubmit = (e: any) => {
     filterFeature(filterSet);
-    for (let i=0; i<filterData.length-1; i++) {
-      filterData[i] = filterData[i] + ", "
-    }
-
     setFinalData([...filterData]);
-
-
-
     e.preventDefault();
   }
 
 
-
-  const listItems = features.map(feat => {
+  const plusListItems = features.map(feat => {
     if (!(filterSet.includes(feat.feature))) {
-      return <input type="button" className="hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500 bg-catsky rounded h-16 w-32 mx-3 my-4 px-2 py-2 drop-shadow-lg" value={feat.feature} key={feat.feature} onClick={handleFilter}></input>
+      if (feat.feature.charAt(0) === "+") {
+        return <input type="button" className="hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500 bg-catsky rounded h-16 w-32 mx-3 my-4 px-2 py-2 drop-shadow-lg" value={feat.feature} key={feat.feature} onClick={handleFilter}></input>
+      }
+    }
+  });
+
+  const minusListItems = features.map(feat => {
+    if (!(filterSet.includes(feat.feature))) {
+      if (feat.feature.charAt(0) === '-') {
+        return <input type="button" className="hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500 bg-catsky rounded h-16 w-32 mx-3 my-4 px-2 py-2 drop-shadow-lg" value={feat.feature} key={feat.feature} onClick={handleFilter}></input>
+      }
     }
   });
 
   const chips = filterSet.map(filt => {
-    return <button onClick={handleRemoveFilter} value={filt} className="bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500" key={filt}>{filt}<FontAwesomeIcon onClick={handleRemoveFilter} className="size-3 pb-0.5 pl-1" icon={faXmark}></FontAwesomeIcon></button>
+    return <button onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500" key={filt}>{filt}</button>
+    
   });
 
+ 
+
+
   const data = finalData.map(items => {
-    return <button className="ml-2 black rounded bg-white w-10 h-10">{items}</button>
+    return <div className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
   })
 
   return (
@@ -157,22 +171,33 @@ function FilterForm(){
     <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen w-screen drop-shadow-md">
       <div className="absolute bottom-2 right-2 w-4 h-4 bg-white"></div>
       <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible sm:visible invisible xl:max-w-96 md:max-w-64 sm:invisible drop-shadow-2xl rounded-md">
-        <form onSubmit={handleSubmit} className="ml-2">
-          <div className="flex flex-row md:pl-6 md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
-            {listItems}
+      <form onSubmit={handleSubmit}>
+          <div className="flex flex-row md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
+            <div>
+            <div className='md:pl-6'>
+              {plusListItems}
+            </div>
+            <Divider variant="fullWidth" className="static w-full"></Divider>
+            <div className="md:pl-6">
+              {minusListItems}
+            </div>
+            </div>
           </div>
-          <div className="border-b ml-0 pl-0"></div>
-          <div className="fixed right-2 bottom-2">
-            <button type="submit" value="Submit" className="mt-5 size-20 bg-catpink rounded text-black drop-shadow-2xl">Submit</button>
+          <Divider variant="fullWidth"></Divider>
+          <div className="flex flex-row-reverse mt-3 mr-3">
+            {/* <input type="submit" value="Submit" className="bg-catpink rounded text-black drop-shadow-2xl" style={{padding: '6%'}}></input> */}
+            <button type="submit" value="submit" className="bg-catpink rounded drop-shadow-2xl" style={{padding: '6%'}}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
           </div>
         </form>
         
       </div>
-      <div className="flex row grow-0 shrink-0 text-white text-xl z-1 absolute h-20" style={{marginLeft: '25rem'}}>
+      <div className="flex flex-row grow-0 shrink-0 text-white text-xl z-1 absolute h-20" style={{marginLeft: '25rem'}}>
         {chips}
       </div>
-        <div className="flex row wrap h-64" style={{marginLeft: '32rem', paddingTop: '24rem'}}>
-            {data}
+        <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 h-screen max-w-96 m-auto">
+            <div className="m-auto h-screen flex place-content-center flex-row gap-y-2.5 flex-wrap">
+              {data}
+            </div>
         </div>
       </div>
 

@@ -30,3 +30,29 @@
   border-bottom: 2px solid #181926;
   margin-top: 2px;
 }
+
+.fadeOutE {
+  animation: fadeOut 150ms;
+}
+
+.fadeInE {
+  animation: fadeIn 150ms;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
