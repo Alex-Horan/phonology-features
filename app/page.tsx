@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import './globals.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
 
 
@@ -103,17 +103,6 @@ function FilterForm(){
       }
     }
   }
-
-  const handleChange = (e: any) => {
-    const { value, checked } = e.target;
-    
-    if (checked) {
-      setFilterSet([...filterSet, value]);
-    } else {
-      setFilterSet(filterSet.filter((e) => e !== value));
-    }
-  }
-
   const handleFilter = (e: any) => {
     let { value } = e.target;
     e.target.className = e.target.className + " fadeOutE";
