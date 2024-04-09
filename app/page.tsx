@@ -1,14 +1,19 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import './globals.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
+import { DOWN, UP, useSwipeable } from "react-swipeable";
+
 
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
+  const [height, setHeight] = useState({height: '80vh'});
+  const modalRef = useRef<HTMLDivElement>();
+  
 
   let filterData: string[] = [];
   const features = [
@@ -23,7 +28,7 @@ function FilterForm(){
   {feature: "+strid", members: ['tʃ','dʒ','f','v','s','z','ʃ','ʒ']},
   {feature: "+lat", members: ['l']},
   {feature: "+d.r", members: ['tʃ','dʒ']},
-  {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j']},
+  {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j','e','i','u','o','a','ɑ','æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ','y']},
   //negative features
   {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','w','j']},
   {feature: "-cons", members: ['w','j']},
@@ -36,7 +41,23 @@ function FilterForm(){
   {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j']},
   {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j','l']},
   {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','h']},
-];
+  // {feature: "all cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','m','n','ŋ','ɹ','l','w','j']},
+    //positive vowel features
+  {feature: "+high", members:['i','y','u','ɪ','ʊ']},
+  {feature: "+low", members:['æ','ɑ','a']},
+  {feature: "+front", members:['e','i','a','æ','ɛ','ɪ','y']},
+  {feature: "+back", members:['u','ɑ','ɔ','ʊ','ʌ','o']},
+  {feature: "+round", members:['u','ɔ','ʊ','o','y']},
+  {feature: "+tense", members: ['e','i','u','a','ɑ','o']},
+  // {feature:"all", members:[]},
+  // negative vowel features
+  {feature: "-high", members:['e','a','ɑ','æ','ə','ɛ','ɔ','ʌ','o']},
+  {feature: "-low", members:['e','i','u','ə','ɛ','ɪ','ɔ','ʊ','ʌ','o']},
+  {feature: "-back", members:['e','i','a','æ','ə','ɛ','ɪ']},
+  {feature: "-front", members:['u','ɑ','ə','ɔ','ʊ','ʌ','o']},
+  {feature: "-round", members:['e','i','a','ɑ','æ','ə','ɛ','ɪ','ʌ']},
+  {feature: "-tense", members:['æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ']},
+  ];
 
 
   function filterFeature(nSet: string[]) {
@@ -127,6 +148,33 @@ function FilterForm(){
   }
 
 
+  
+
+  
+  const handlers = useSwipeable({
+    onSwipedUp: () =>{}, 
+    onSwipedDown: ()=>{},   
+    onSwiping: (eventData)=>{
+      console.log(eventData.absY);
+      // let curH = ((2 * eventData.absY) / window.innerHeight);
+      let curH = eventData.deltaY;
+      if (eventData.dir === UP) {
+        let finH = ((parseInt(height.height) - curH)/10);
+        console.log(finH);
+        setHeight({height: `${finH}vh`});
+      } else if (eventData.dir === DOWN) {
+        let finH = ((parseInt(height.height) - curH)/window.innerHeight);
+        setHeight({height: `${finH}vh`})
+      }
+    }, 
+    onTouchEndOrOnMouseUp: ()=>{}, 
+      trackMouse: true, trackTouch: true});
+  
+    const refPassThrough = (el: any) => {
+    handlers.ref(el);
+    modalRef.current = el;
+  }
+
   const plusListItems = features.map(feat => {
     if (!(filterSet.includes(feat.feature))) {
       if (feat.feature.charAt(0) === "+") {
@@ -143,23 +191,23 @@ function FilterForm(){
     }
   });
 
+  
+
   const chips = filterSet.map(filt => {
-    return <button onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500" key={filt}>{filt}</button>
+    return <button key={filt} onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500">{filt}</button>
     
   });
 
- 
-
-
   const data = finalData.map(items => {
-    return <div className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
+    return <div key={items} className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
   })
 
   return (
 
     <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen w-screen drop-shadow-md">
-      <div className="absolute bottom-2 right-2 w-4 h-4 bg-white"></div>
-      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible sm:visible invisible xl:max-w-96 md:max-w-64 sm:invisible drop-shadow-2xl rounded-md">
+      <button className="absolute bottom-2 right-2 w-4 h-4 bg-white"></button>
+      <div className="md:invisible md:disabled sm:visible absolute bottom-2 left-2 w-10 h-10 bg-catpink rounded-md"></div>
+      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible sm:visible invisible xl:max-w-96 md:max-w-48 sm:invisible drop-shadow-2xl rounded-md">
       <form onSubmit={handleSubmit}>
           <div className="flex flex-row md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
             <div>
@@ -183,10 +231,14 @@ function FilterForm(){
       <div className="flex flex-row grow-0 shrink-0 text-white text-xl z-1 absolute h-20" style={{marginLeft: '25rem'}}>
         {chips}
       </div>
+      
         <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 h-screen max-w-96 m-auto">
             <div className="m-auto h-screen flex place-content-center flex-row gap-y-2.5 flex-wrap">
               {data}
             </div>
+        </div>
+        <div ref={refPassThrough} className="absolute sm:visible md:invisible bottom-0 rounded-xl bg-white w-screen flex flex-col items-center" style={height}>
+          <div {...handlers} className="w-8 rounded h-2 bg-slate-500 mt-2"></div>
         </div>
       </div>
 
