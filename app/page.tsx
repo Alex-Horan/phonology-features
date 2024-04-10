@@ -1,16 +1,15 @@
 'use client';
-import React, { useState } from "react";
-import './globals.css';
+import React, { useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
-
+import './globals.css';
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
-
   let filterData: string[] = [];
+  const modRef = useRef<HTMLDivElement>(null);
   const features = [
   //positive features
   {feature: "+syll", members: ['m','n','ŋ','ɹ','l']},
@@ -23,7 +22,7 @@ function FilterForm(){
   {feature: "+strid", members: ['tʃ','dʒ','f','v','s','z','ʃ','ʒ']},
   {feature: "+lat", members: ['l']},
   {feature: "+d.r", members: ['tʃ','dʒ']},
-  {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j']},
+  {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j','e','i','u','o','a','ɑ','æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ','y']},
   //negative features
   {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','w','j']},
   {feature: "-cons", members: ['w','j']},
@@ -36,7 +35,23 @@ function FilterForm(){
   {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j']},
   {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j','l']},
   {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','h']},
-];
+  // {feature: "all cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','m','n','ŋ','ɹ','l','w','j']},
+    //positive vowel features
+  {feature: "+high", members:['i','y','u','ɪ','ʊ']},
+  {feature: "+low", members:['æ','ɑ','a']},
+  {feature: "+front", members:['e','i','a','æ','ɛ','ɪ','y']},
+  {feature: "+back", members:['u','ɑ','ɔ','ʊ','ʌ','o']},
+  {feature: "+round", members:['u','ɔ','ʊ','o','y']},
+  {feature: "+tense", members: ['e','i','u','a','ɑ','o']},
+  // {feature:"all", members:[]},
+  // negative vowel features
+  {feature: "-high", members:['e','a','ɑ','æ','ə','ɛ','ɔ','ʌ','o']},
+  {feature: "-low", members:['e','i','u','ə','ɛ','ɪ','ɔ','ʊ','ʌ','o']},
+  {feature: "-back", members:['e','i','a','æ','ə','ɛ','ɪ']},
+  {feature: "-front", members:['u','ɑ','ə','ɔ','ʊ','ʌ','o']},
+  {feature: "-round", members:['e','i','a','ɑ','æ','ə','ɛ','ɪ','ʌ']},
+  {feature: "-tense", members:['æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ']},
+  ];
 
 
   function filterFeature(nSet: string[]) {
@@ -107,6 +122,7 @@ function FilterForm(){
     let { value } = e.target;
     e.target.className = e.target.className + " fadeOutE";
     e.target.addEventListener('animationend', () => {
+      e.target.className = e.target.className + " opacity-0";
       setFilterSet([...filterSet, value]);
     });
   }
@@ -115,7 +131,7 @@ function FilterForm(){
     const { value } = e.target;
     e.target.className = e.target.className.replace("fadeInE","") + " fadeOutE";
     e.target.addEventListener('animationend', () => {
-      e.target.className = e.target.className + " opacity-0"
+      e.target.className = e.target.className + " opacity-0";
       setFilterSet(filterSet.filter((e) => e !== value));
     });
   }
@@ -126,6 +142,28 @@ function FilterForm(){
     e.preventDefault();
   }
 
+  const openFilter = () =>{
+    if (modRef.current!.classList.contains("filterCloseE")) {
+      modRef.current!.className.replace(" filterCloseE","filterOpenE");
+    } else {
+      modRef.current!.className = modRef.current!.className + " filterOpenE";
+    }
+    
+  }
+
+  const closeFilter = () => {
+    modRef.current!.className = modRef.current!.className.replace("filterOpenE","filterCloseE")
+    modRef.current?.addEventListener('animationend', () => {
+      modRef.current!.className = modRef.current!.className.replace("filterCloseE","");
+    })
+  }
+
+  const handleMobileSubmit = (e: any) => {
+    filterFeature(filterSet);
+    setFinalData([...filterData]);
+    e.preventDefault();
+    closeFilter();
+  }
 
   const plusListItems = features.map(feat => {
     if (!(filterSet.includes(feat.feature))) {
@@ -143,30 +181,38 @@ function FilterForm(){
     }
   });
 
+
   const chips = filterSet.map(filt => {
-    return <button onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500" key={filt}>{filt}</button>
+    return <button key={filt} onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-catsapphire px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500">{filt}</button>
     
   });
 
- 
-
-
   const data = finalData.map(items => {
-    return <div className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
+    return <div key={items} className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
   })
 
   return (
-
-    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen w-screen drop-shadow-md">
-      <div className="absolute bottom-2 right-2 w-4 h-4 bg-white"></div>
-      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible sm:visible invisible xl:max-w-96 md:max-w-64 sm:invisible drop-shadow-2xl rounded-md">
+    // i should honestly prolly rewrite this into components... maybe later
+    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-svh md:h-screen w-screen relative z-0 overflow-y-hidden">
+      <div ref={modRef} className="absolute md:hidden h-0 bottom-0 bg-white w-screen overflow-y-scroll z-10" style={{borderRadius: '20px 20px 0 0'}}>
+          <div className="sticky float-right top-1 right-2 h-4 pr-2 pt-2" onClick={closeFilter}>&#10006;</div>
+          <div className="flex flex-row flex-wrap flex-grow-0 justify-center flex-shrink-0 overflow-y-scroll mt-4">
+            {plusListItems}
+            <div className="h-0.5 bg-black w-full"></div>
+            {minusListItems}
+          </div>
+          <button type="submit" value="Submit" className="sticky bottom-2 float-right right-2 bg-catpink rounded-full w-12 h-12" onClick={handleMobileSubmit}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
+        </div>
+        <button className="absolute w-10 h-10 bottom-2 left-2 bg-catsky z-11 md:hidden block rounded-full" onClick={openFilter}><FontAwesomeIcon icon={faFilter}></FontAwesomeIcon></button>
+      <div className="absolute container h-screen hidden md:block bg-gradient-to-r from-surface0 to-surface2 xl:max-w-96 md:max-w-48 drop-shadow-2xl rounded-md">
       <form onSubmit={handleSubmit}>
           <div className="flex flex-row md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
+            {/* i sure do love <div>s */}
             <div>
             <div className='md:pl-6'>
               {plusListItems}
             </div>
-            <Divider variant="fullWidth" className="static w-full"></Divider>
+            <Divider variant="fullWidth" className="static w-full"></Divider>  
             <div className="md:pl-6">
               {minusListItems}
             </div>
@@ -174,39 +220,22 @@ function FilterForm(){
           </div>
           <Divider variant="fullWidth"></Divider>
           <div className="flex flex-row-reverse mt-3 mr-3">
-            {/* <input type="submit" value="Submit" className="bg-catpink rounded text-black drop-shadow-2xl" style={{padding: '6%'}}></input> */}
-            <button type="submit" value="submit" className="bg-catpink rounded drop-shadow-2xl" style={{padding: '6%'}}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
+            {/* inputs in jsx are goofy af and you cant set inner html. and if you put an icon component as its inner text, when you click in the area of the icon it just... tries to execute the icon's onClick property (but why????)*/}
+            <button type="submit" value="submit" className="bg-catpink rounded-xl drop-shadow-2xl w-16 h-16"><FontAwesomeIcon className="text-2xl text-center" icon={faCheck}></FontAwesomeIcon></button>
           </div>
-        </form>
-        
+        </form> 
       </div>
-      <div className="flex flex-row grow-0 shrink-0 text-white text-xl z-1 absolute h-20" style={{marginLeft: '25rem'}}>
+      <div className="flex flex-row flex-wrap grow-0 shrink-0 md:text-white md:text-xl md:z-1 md:absolute md:h-20 md:ml-25r">
         {chips}
       </div>
         <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 h-screen max-w-96 m-auto">
             <div className="m-auto h-screen flex place-content-center flex-row gap-y-2.5 flex-wrap">
               {data}
             </div>
+        </div>  
         </div>
-      </div>
 
-// <div>
-    //   <div className="FilterSection">
-    //     <form onSubmit={handleSubmit}>
-    //       {listItems}
-    //       <br></br>
-    //       <button type="submit" value="Submit" className="subm mx-auto bg-gray-500 p-1 mt-3 rounded text-white border-2 border-stone-200">Submit</button>
-    //     </form>
-    //   </div>
-
-    //   <div className="Output mt-10">
-    //     {
-    //       finalData.length > 0 
-    //       ? <p className="mx-auto text-center">[{finalData}]</p>
-    //       : ""
-    //     }
-    //   </div>
-    // </div>
+      
   )
 }
 
@@ -214,6 +243,6 @@ function FilterForm(){
 
 export default function Home() {
  return (
-  <FilterForm></FilterForm>
+  <FilterForm ></FilterForm>
  )
 }
