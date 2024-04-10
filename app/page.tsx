@@ -1,13 +1,14 @@
 'use client';
 import React, { useState, useRef } from "react";
-import './globals.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
+import './globals.css';
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
+  const [update, setUpdate] = useState<boolean>(false);
   let filterData: string[] = [];
   const modRef = useRef<HTMLDivElement>(null);
   const features = [
@@ -142,13 +143,33 @@ function FilterForm(){
     e.preventDefault();
   }
 
+
   
-  const openFilter = (e: any) =>{
-    modRef.current!.className = modRef.current!.className.replace("sm:h-0","sm:h-70vh") 
+  const openFilter = () =>{
+    if (modRef.current!.classList.contains("filterCloseE")) {
+      setUpdate(!update);
+      modRef.current!.className.replace(" filterCloseE","filterOpenE");
+      console.log("yoop")
+    } else {
+
+      modRef.current!.className = modRef.current!.className + " filterOpenE";
+      console.log('yeep')
+    }
+    
   }
 
-  const closeFilter = (e: any) => {
-    modRef.current!.className = modRef.current!.className.replace("sm:h-70vh","sm:h-0");
+  const closeFilter = () => {
+    modRef.current!.className = modRef.current!.className.replace("filterOpenE","filterCloseE")
+    modRef.current?.addEventListener('animationend', () => {
+      modRef.current!.className = modRef.current!.className.replace("filterCloseE","");
+    })
+  }
+
+  const handleMobileSubmit = (e: any) => {
+    filterFeature(filterSet);
+    setFinalData([...filterData]);
+    e.preventDefault();
+    closeFilter();
   }
 
   const plusListItems = features.map(feat => {
@@ -169,7 +190,7 @@ function FilterForm(){
 
 
   const chips = filterSet.map(filt => {
-    return <button key={filt} onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500">{filt}</button>
+    return <button key={filt} onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-catsapphire px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500">{filt}</button>
     
   });
 
@@ -179,22 +200,18 @@ function FilterForm(){
 
   return (
     // i should honestly prolly rewrite this into components... maybe later
-    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen sm:h-svh md:w-screen drop-shadow-md relative z-0 overflow-y-hidden">
-      <div ref={modRef} className="absolute h-0 sm:h-0 bottom-0 bg-white w-screen overflow-y-scroll z-10" style={{borderRadius: '20px 20px 0 0'}}>
+    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-svh md:h-screen w-screen relative z-0 overflow-y-hidden">
+      <div ref={modRef} className="absolute md:hidden h-0 bottom-0 bg-white w-screen overflow-y-scroll z-10" style={{borderRadius: '20px 20px 0 0'}}>
           <div className="sticky float-right top-1 right-2 h-4 pr-2 pt-2" onClick={closeFilter}>&#10006;</div>
-          <div className="flex flex-row flex-wrap place-content-center flex-grow-0 flex-shrink-0 overflow-y-scroll mt-4">
-            <div className="pl-14">
+          <div className="flex flex-row flex-wrap flex-grow-0 justify-center flex-shrink-0 overflow-y-scroll mt-4">
             {plusListItems}
-            </div>
             <div className="h-0.5 bg-black w-full"></div>
-            <div className="pl-14">
             {minusListItems}
-            </div>
           </div>
-          <button type="submit" value="Submit" className="sticky bottom-2 float-right right-2 bg-catpink w-10 h-10" onSubmit={handleSubmit}></button>
+          <button type="submit" value="Submit" className="sticky bottom-2 float-right right-2 bg-catpink rounded-full w-12 h-12" onClick={handleMobileSubmit}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
         </div>
-        <button className="absolute w-10 h-10 bottom-2 left-2 bg-catsky z-11 rounded-full" onClick={openFilter}><FontAwesomeIcon icon={faFilter}></FontAwesomeIcon></button>
-      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible invisible xl:max-w-96 md:max-w-48 sm:invisible drop-shadow-2xl rounded-md">
+        <button className="absolute w-10 h-10 bottom-2 left-2 bg-catsky z-11 md:hidden block rounded-full" onClick={openFilter}><FontAwesomeIcon icon={faFilter}></FontAwesomeIcon></button>
+      <div className="absolute container h-screen hidden md:block bg-gradient-to-r from-surface0 to-surface2 xl:max-w-96 md:max-w-48 drop-shadow-2xl rounded-md">
       <form onSubmit={handleSubmit}>
           <div className="flex flex-row md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
             {/* i sure do love <div>s */}
@@ -211,14 +228,14 @@ function FilterForm(){
           <Divider variant="fullWidth"></Divider>
           <div className="flex flex-row-reverse mt-3 mr-3">
             {/* inputs in jsx are goofy af and you cant set inner html. and if you put an icon component as its inner text, when you click in the area of the icon it just... tries to execute the icon's onClick property (but why????)*/}
-            <button type="submit" value="submit" className="bg-catpink rounded drop-shadow-2xl" style={{padding: '6%'}}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
+            <button type="submit" value="submit" className="bg-catpink rounded-xl drop-shadow-2xl w-16 h-16"><FontAwesomeIcon className="text-2xl text-center" icon={faCheck}></FontAwesomeIcon></button>
           </div>
         </form> 
       </div>
       <div className="flex flex-row flex-wrap grow-0 shrink-0 md:text-white md:text-xl md:z-1 md:absolute md:h-20 md:ml-25r">
         {chips}
       </div>
-        <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 md:h-screen sm:h-svh max-w-96 m-auto">
+        <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 h-screen max-w-96 m-auto">
             <div className="m-auto h-screen flex place-content-center flex-row gap-y-2.5 flex-wrap">
               {data}
             </div>
