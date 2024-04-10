@@ -2,20 +2,14 @@
 import React, { useState, useRef } from "react";
 import './globals.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
-import { DOWN, UP, useSwipeable } from "react-swipeable";
-
-
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
-  const [height, setHeight] = useState({height: '80vh'});
-  const modalRef = useRef<HTMLDivElement>();
-  
-
   let filterData: string[] = [];
+  const modRef = useRef<HTMLDivElement>(null);
   const features = [
   //positive features
   {feature: "+syll", members: ['m','n','ŋ','ɹ','l']},
@@ -128,6 +122,7 @@ function FilterForm(){
     let { value } = e.target;
     e.target.className = e.target.className + " fadeOutE";
     e.target.addEventListener('animationend', () => {
+      e.target.className = e.target.className + " opacity-0";
       setFilterSet([...filterSet, value]);
     });
   }
@@ -136,7 +131,7 @@ function FilterForm(){
     const { value } = e.target;
     e.target.className = e.target.className.replace("fadeInE","") + " fadeOutE";
     e.target.addEventListener('animationend', () => {
-      e.target.className = e.target.className + " opacity-0"
+      e.target.className = e.target.className + " opacity-0";
       setFilterSet(filterSet.filter((e) => e !== value));
     });
   }
@@ -147,32 +142,13 @@ function FilterForm(){
     e.preventDefault();
   }
 
+  
+  const openFilter = (e: any) =>{
+    modRef.current!.className = modRef.current!.className.replace("sm:h-0","sm:h-70vh") 
+  }
 
-  
-
-  
-  const handlers = useSwipeable({
-    onSwipedUp: () =>{}, 
-    onSwipedDown: ()=>{},   
-    onSwiping: (eventData)=>{
-      console.log(eventData.absY);
-      // let curH = ((2 * eventData.absY) / window.innerHeight);
-      let curH = eventData.deltaY;
-      if (eventData.dir === UP) {
-        let finH = ((parseInt(height.height) - curH)/10);
-        console.log(finH);
-        setHeight({height: `${finH}vh`});
-      } else if (eventData.dir === DOWN) {
-        let finH = ((parseInt(height.height) - curH)/window.innerHeight);
-        setHeight({height: `${finH}vh`})
-      }
-    }, 
-    onTouchEndOrOnMouseUp: ()=>{}, 
-      trackMouse: true, trackTouch: true});
-  
-    const refPassThrough = (el: any) => {
-    handlers.ref(el);
-    modalRef.current = el;
+  const closeFilter = (e: any) => {
+    modRef.current!.className = modRef.current!.className.replace("sm:h-70vh","sm:h-0");
   }
 
   const plusListItems = features.map(feat => {
@@ -191,7 +167,6 @@ function FilterForm(){
     }
   });
 
-  
 
   const chips = filterSet.map(filt => {
     return <button key={filt} onClick={handleRemoveFilter} value={filt} className="chip fadeInE bg-slate-900 px-2 py-2 max-h-12 ml-2 rounded-lg mt-2 hover:bg-[#8caaee] hover:ring-2 hover:ring-blue-500">{filt}</button>
@@ -203,18 +178,31 @@ function FilterForm(){
   })
 
   return (
-
-    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen w-screen drop-shadow-md">
-      <button className="absolute bottom-2 right-2 w-4 h-4 bg-white"></button>
-      <div className="md:invisible md:disabled sm:visible absolute bottom-2 left-2 w-10 h-10 bg-catpink rounded-md"></div>
-      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible sm:visible invisible xl:max-w-96 md:max-w-48 sm:invisible drop-shadow-2xl rounded-md">
+    // i should honestly prolly rewrite this into components... maybe later
+    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-screen sm:h-svh md:w-screen drop-shadow-md relative z-0 overflow-y-hidden">
+      <div ref={modRef} className="absolute h-0 sm:h-0 bottom-0 bg-white w-screen overflow-y-scroll z-10" style={{borderRadius: '20px 20px 0 0'}}>
+          <div className="sticky float-right top-1 right-2 h-4 pr-2 pt-2" onClick={closeFilter}>&#10006;</div>
+          <div className="flex flex-row flex-wrap place-content-center flex-grow-0 flex-shrink-0 overflow-y-scroll mt-4">
+            <div className="pl-14">
+            {plusListItems}
+            </div>
+            <div className="h-0.5 bg-black w-full"></div>
+            <div className="pl-14">
+            {minusListItems}
+            </div>
+          </div>
+          <button type="submit" value="Submit" className="sticky bottom-2 float-right right-2 bg-catpink w-10 h-10" onSubmit={handleSubmit}></button>
+        </div>
+        <button className="absolute w-10 h-10 bottom-2 left-2 bg-catsky z-11 rounded-full" onClick={openFilter}><FontAwesomeIcon icon={faFilter}></FontAwesomeIcon></button>
+      <div className="absolute container h-screen bg-gradient-to-r from-surface0 to-surface2 md:visible invisible xl:max-w-96 md:max-w-48 sm:invisible drop-shadow-2xl rounded-md">
       <form onSubmit={handleSubmit}>
           <div className="flex flex-row md:pt-5 overflow-y-auto flex-wrap max-h-90vh">
+            {/* i sure do love <div>s */}
             <div>
             <div className='md:pl-6'>
               {plusListItems}
             </div>
-            <Divider variant="fullWidth" className="static w-full"></Divider>
+            <Divider variant="fullWidth" className="static w-full"></Divider>  
             <div className="md:pl-6">
               {minusListItems}
             </div>
@@ -222,43 +210,22 @@ function FilterForm(){
           </div>
           <Divider variant="fullWidth"></Divider>
           <div className="flex flex-row-reverse mt-3 mr-3">
-            {/* <input type="submit" value="Submit" className="bg-catpink rounded text-black drop-shadow-2xl" style={{padding: '6%'}}></input> */}
+            {/* inputs in jsx are goofy af and you cant set inner html. and if you put an icon component as its inner text, when you click in the area of the icon it just... tries to execute the icon's onClick property (but why????)*/}
             <button type="submit" value="submit" className="bg-catpink rounded drop-shadow-2xl" style={{padding: '6%'}}><FontAwesomeIcon icon={faCheck}></FontAwesomeIcon></button>
           </div>
-        </form>
-        
+        </form> 
       </div>
-      <div className="flex flex-row grow-0 shrink-0 text-white text-xl z-1 absolute h-20" style={{marginLeft: '25rem'}}>
+      <div className="flex flex-row flex-wrap grow-0 shrink-0 md:text-white md:text-xl md:z-1 md:absolute md:h-20 md:ml-25r">
         {chips}
       </div>
-      
-        <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 h-screen max-w-96 m-auto">
+        <div className="flex flex-row flex-wrap items-center grow-0 shrink-0 md:h-screen sm:h-svh max-w-96 m-auto">
             <div className="m-auto h-screen flex place-content-center flex-row gap-y-2.5 flex-wrap">
               {data}
             </div>
+        </div>  
         </div>
-        <div ref={refPassThrough} className="absolute sm:visible md:invisible bottom-0 rounded-xl bg-white w-screen flex flex-col items-center" style={height}>
-          <div {...handlers} className="w-8 rounded h-2 bg-slate-500 mt-2"></div>
-        </div>
-      </div>
 
-// <div>
-    //   <div className="FilterSection">
-    //     <form onSubmit={handleSubmit}>
-    //       {listItems}
-    //       <br></br>
-    //       <button type="submit" value="Submit" className="subm mx-auto bg-gray-500 p-1 mt-3 rounded text-white border-2 border-stone-200">Submit</button>
-    //     </form>
-    //   </div>
-
-    //   <div className="Output mt-10">
-    //     {
-    //       finalData.length > 0 
-    //       ? <p className="mx-auto text-center">[{finalData}]</p>
-    //       : ""
-    //     }
-    //   </div>
-    // </div>
+      
   )
 }
 
@@ -266,6 +233,6 @@ function FilterForm(){
 
 export default function Home() {
  return (
-  <FilterForm></FilterForm>
+  <FilterForm ></FilterForm>
  )
 }
