@@ -8,7 +8,6 @@ import './globals.css';
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
-  const [update, setUpdate] = useState<boolean>(false);
   let filterData: string[] = [];
   const modRef = useRef<HTMLDivElement>(null);
   const features = [
@@ -143,17 +142,11 @@ function FilterForm(){
     e.preventDefault();
   }
 
-
-  
   const openFilter = () =>{
     if (modRef.current!.classList.contains("filterCloseE")) {
-      setUpdate(!update);
       modRef.current!.className.replace(" filterCloseE","filterOpenE");
-      console.log("yoop")
     } else {
-
       modRef.current!.className = modRef.current!.className + " filterOpenE";
-      console.log('yeep')
     }
     
   }
