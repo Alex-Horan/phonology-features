@@ -4,54 +4,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { Divider } from "@mui/material";
 import './globals.css';
+import { features, places } from "./data";
 
 function FilterForm(){
   const [filterSet, setFilterSet] = useState<string[]>([]);
   const [finalData, setFinalData] = useState<string[]>([]);
+  const [currentChar, setChar] = useState<string>('');
   let filterData: string[] = [];
   const modRef = useRef<HTMLDivElement>(null);
-
-  const features = [
-  //positive features
-    {feature: "+syll", members: ['m','n','ŋ','ɹ','l']},
-    {feature: "+cons", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','m','n','ŋ','ɹ','l']},
-    {feature: "+son", members: ['m','n','ŋ','ɹ','l','w','j']},
-    {feature: "+cor", members: ['t','d','ɾ','tʃ','dʒ','θ','ð','s','z','ʃ','ʒ','n','ɹ','l','j']},
-    {feature: "+ant", members: ['p','b','t','d','ɾ','f','v','θ','ð','s','z','m','n','ɹ','l']},
-    {feature: "+cont", members: ['f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','l','w','j']},
-    {feature: "+nas", members: ['m','n','ŋ']},
-    {feature: "+strid", members: ['tʃ','dʒ','f','v','s','z','ʃ','ʒ']},
-    {feature: "+lat", members: ['l']},
-    {feature: "+d.r", members: ['tʃ','dʒ']},
-    {feature: "+voice", members: ['b','d','ɾ','g','ʔ','dʒ','v','ð','z','ʒ','m','n','ŋ','ɹ','l','w','j','e','i','u','o','a','ɑ','æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ','y']},
-  //negative features
-    {feature: "-syll", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','w','j']},
-    {feature: "-cons", members: ['w','j']},
-    {feature: "-son", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h']},
-    {feature: "-cor", members: ['p','b','k','g','ʔ','f','v','h','m','ŋ','w']},
-    {feature: "-ant", members: ['k','g','ʔ','tʃ','dʒ','ʃ','ʒ','h','ŋ','w','j']},
-    {feature: "-cont", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','m','n','ŋ']},
-    {feature: "-nas", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','l','w','j']},
-    {feature: "-strid", members: ['p','b','t','d','ɾ','k','g','ʔ','θ','ð','h','m','n','ŋ','ɹ','l','w','j']},
-    {feature: "-lat", members: ['p','b','t','d','ɾ','k','g','ʔ','tʃ','dʒ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j']},
-    {feature: "-d.r", members: ['p','b','t','d','ɾ','k','g','ʔ','f','v','θ','ð','s','z','ʃ','ʒ','h','ɹ','m','n','ŋ','w','j','l']},
-    {feature: "-voice", members: ['p','t','k','ʔ','tʃ','f','θ','s','ʃ','h']},
-  //positive vowel features
-    {feature: "+high", members:['i','y','u','ɪ','ʊ']},
-    {feature: "+low", members:['æ','ɑ','a']},
-    {feature: "+front", members:['e','i','a','æ','ɛ','ɪ','y']},
-    {feature: "+back", members:['u','ɑ','ɔ','ʊ','ʌ','o']},
-    {feature: "+round", members:['u','ɔ','ʊ','o','y']},
-    {feature: "+tense", members: ['e','i','u','a','ɑ','o']},
-  // negative vowel features
-    {feature: "-high", members:['e','a','ɑ','æ','ə','ɛ','ɔ','ʌ','o']},
-    {feature: "-low", members:['e','i','u','ə','ɛ','ɪ','ɔ','ʊ','ʌ','o']},
-    {feature: "-back", members:['e','i','a','æ','ə','ɛ','ɪ']},
-    {feature: "-front", members:['u','ɑ','ə','ɔ','ʊ','ʌ','o']},
-    {feature: "-round", members:['e','i','a','ɑ','æ','ə','ɛ','ɪ','ʌ']},
-    {feature: "-tense", members:['æ','ə','ɛ','ɪ','ɔ','ʊ','ʌ']},
-  ];
-
+  const popRef = useRef<HTMLDivElement>(null);
 
   function filterFeature(nSet: string[]) {
     if (nSet.length === 0) {
@@ -155,10 +116,10 @@ function FilterForm(){
 
   //animates the closing of the filter panel: MOBILE
   const closeFilter = () => {
-    modRef.current!.className = modRef.current!.className.replace("filterOpenE","filterCloseE")
+    modRef.current!.className = modRef.current!.className.replace("filterOpenE","filterCloseE");
     modRef.current?.addEventListener('animationend', () => {
       modRef.current!.className = modRef.current!.className.replace("filterCloseE","");
-    })
+    });
   }
 
   //same as handleSubmit(), but this closes the filter panel after: MOBILE
@@ -169,6 +130,15 @@ function FilterForm(){
     closeFilter();
   }
 
+  const handleModalOpen = (e: any) => {
+    const { value } = e.target;
+    console.log(value);
+    setChar(value);
+    popRef.current!.className = popRef.current!.className.replace("md:hidden","md:block");
+  }
+  const handleModalClose = (e: any) => {
+    popRef.current!.className = popRef.current!.className.replace("md:block", "md:hidden");
+  }
   //returns all the elements that start with '+', this is so i can add a divider between the positive and negative features: BOTH
   const plusListItems = features.map(feat => {
     if (!(filterSet.includes(feat.feature))) {
@@ -194,12 +164,25 @@ function FilterForm(){
 
   // this outputs each ipa character in its own little box: BOTH
   const data = finalData.map(items => {
-    return <div key={items} className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
+    // return <div key={items} className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</div>
+    return <button value={items} key={items} onClick={handleModalOpen} className="ml-2 w-10 text-center black rounded bg-white p-2">{items}</button>
   })
 
   return (
     // i should rewrite this at some point, i have figured out how innefficient this styling is. i am quite literally fighting against myself; will continue to improve.
-    <div className="bg-gradient-to-r from-mantle to-crust to-surface0 h-svh md:h-screen w-screen relative z-0 overflow-y-hidden">
+    <>
+    <div ref={popRef} id="popModalDim" className="hidden md:hidden w-screen h-screen bg-black/50 absolute z-20">
+        <div id="popModalWrapper" className="h-screen flex flex-row place-content-center" onClick={handleModalClose}>
+          <div id="popModal" className="h-1/2 w-1/2 max-w-[1000px] bg-white m-auto">
+            <div className="text-center text-xl text-black">
+              {
+                currentChar !== '' ? <h1>{currentChar}</h1> : ''
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    <div className="bg-gradient-to-r from-mantle to-surface0 h-svh md:h-screen w-screen relative z-0 overflow-y-hidden">
       {/* filter menu: MOBILE */}
       <div ref={modRef} className="absolute md:hidden h-0 bottom-0 bg-white w-screen overflow-y-scroll z-10" style={{borderRadius: '20px 20px 0 0'}}>
           <div className="sticky float-right top-1 right-2 h-4 pr-2 pt-2" onClick={closeFilter}>&#10006;</div>
@@ -247,7 +230,7 @@ function FilterForm(){
             </div>
         </div>  
         </div>
-
+        </>
       
   )
 }
